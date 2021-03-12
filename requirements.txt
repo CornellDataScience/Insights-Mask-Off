@@ -1,9 +1,9 @@
-Package       Version  
-------------- ---------
-certifi       2020.6.20
-dlib          19.21.1  
-numpy         1.18.5   
-opencv-python 4.4.0.42 
-pip           10.0.1   
-setuptools    40.2.0   
-wheel         0.36.2   
+# Package       Version  
+# ------------- ---------
+certifi == 2020.6.20
+dlib == 19.21.1  
+numpy == 1.18.5   
+opencv-python == 4.4.0.42 
+pip == 10.0.1   
+setuptools == 40.2.0   
+wheel == 0.36.2   
