@@ -9,14 +9,24 @@ import dlib
 import numpy as np
 import os
 from PIL import Image
+import sys
 
+def generate_mask(file, count, convert):
 
-def generate_mask(face, count):
+    file_noext = file[:file.index(".")]
+    
+    # Convert image from jpg to png
+    if (convert):
+        im1 = Image.open(file)
+        new_file = file_noext + ".png"
+        im1.save(new_file)
+        file = new_file
+
     # Initial Setup
     detector = dlib.get_frontal_face_detector()
     predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
-    print(face)
-    img = cv2.imread(face)
+    print("Processing: ", file)
+    img = cv2.imread(file)
     gray = cv2.cvtColor(src=img, code=cv2.COLOR_BGR2GRAY)
     face = detector(gray)[0]
     landmarks = predictor(image=img, box=face)
@@ -51,7 +61,7 @@ def generate_mask(face, count):
     mask = cv2.fillPoly(img, [pts], 255)
 
     # cv2.imshow(winname="Face", mat=mask)
-    cv2.imwrite('data/' + 'George_W_Bush_' + str(count) + '_m.png', mask)
+    cv2.imwrite(file_noext + '_m.png', mask)
     cv2.waitKey(delay=0)
     cv2.destroyAllWindows()
 
@@ -61,9 +71,23 @@ if __name__ == '__main__':
         # creating a folder named data
         if not os.path.exists('data'):
             os.makedirs('data')
-        # if not created then raise error
+
+        inputName = sys.argv[1]
+
+        # if data not created then raise error
     except OSError:
         print('Error: Creating directory of data')
-
-    for i in range(1, 21):
-        generate_mask('George_W_Bush/George_W_Bush_' + str(i) + '.png', i)
+    
+    except IndexError:
+        print('Error: Provide an input folder')
+    
+    count = 0
+    for file in (os.listdir("data/" + inputName)):
+        if "_m.png" not in file:
+            ext = file.split(".")[-1] 
+            if (ext == "png"):
+                generate_mask("data/" + inputName + "/" + file, count, False)
+                count += 1
+            elif (ext == "jpg"):
+                generate_mask("data/" + inputName + "/" + file, count, True)
+                count += 1
