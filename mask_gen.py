@@ -11,10 +11,11 @@ import os
 from PIL import Image
 import sys
 
-def generate_mask(file, count, convert):
 
-    file_noext = file[:file.index(".")]
+def generate_mask(file, count, convert):
     
+    file_noext = file[:file.index(".")]
+
     # Convert image from jpg to png
     if (convert):
         im1 = Image.open(file)
@@ -24,8 +25,8 @@ def generate_mask(file, count, convert):
 
     # Initial Setup
     detector = dlib.get_frontal_face_detector()
-    predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
-    print("Processing: ", file)
+    predictor = dlib.shape_predictor("Insights-Mask-Off/shape_predictor_68_face_landmarks.dat")
+    # print("Processing: ", file)
     img = cv2.imread(file)
     gray = cv2.cvtColor(src=img, code=cv2.COLOR_BGR2GRAY)
     face = detector(gray)[0]
@@ -60,10 +61,11 @@ def generate_mask(file, count, convert):
     pts = np.array(curve_face, np.int32)
     mask = cv2.fillPoly(img, [pts], 255)
 
+    # print("Processed: ", file)
     # cv2.imshow(winname="Face", mat=mask)
     cv2.imwrite(file_noext + '_m.png', mask)
-    cv2.waitKey(delay=0)
-    cv2.destroyAllWindows()
+    # cv2.waitKey(delay=0)
+    # cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
@@ -77,17 +79,21 @@ if __name__ == '__main__':
         # if data not created then raise error
     except OSError:
         print('Error: Creating directory of data')
-    
+
     except IndexError:
         print('Error: Provide an input folder')
-    
+
     count = 0
-    for file in (os.listdir("data/" + inputName)):
+    for file in (os.listdir(inputName)):
+        # print(file)
         if "_m.png" not in file:
-            ext = file.split(".")[-1] 
-            if (ext == "png"):
-                generate_mask("data/" + inputName + "/" + file, count, False)
-                count += 1
-            elif (ext == "jpg"):
-                generate_mask("data/" + inputName + "/" + file, count, True)
-                count += 1
+            ext = file.split(".")[-1]
+            # if (ext == "png"):
+            #     generate_mask(inputName + "/" + file, count, False)
+            #     count += 1
+            try: 
+                if (ext == "jpg"):
+                    generate_mask(inputName + "/" + file, count, True)
+                    count += 1
+            except BaseException:
+                print('File broke ', file)
