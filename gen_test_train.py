@@ -1,7 +1,10 @@
 import sys
 import os
 import random
+from sklearn.model_selection import train_test_split
 import pandas as pd
+
+partition_amt = int(13141* .8)
 
 if __name__ == '__main__':
 
@@ -21,7 +24,7 @@ if __name__ == '__main__':
 
     print(noMask)
     print("len no mask",len(noMask))
-    trainSize = 13000
+    trainSize = 13141
 
     train = random.sample(noMask, trainSize)
     trainMask = []
@@ -34,15 +37,15 @@ if __name__ == '__main__':
     print(trainMask) # corresponding with mask
 
 
-    first10_mask = train[:6500]
-    first10_nomask = trainMask[:6500]
-    ones = [1 for i in range(6500)]
+    first10_mask = train[:partition_amt]
+    first10_nomask = trainMask[:partition_amt]
+    ones = [1 for i in range(partition_amt)]
     df = (pd.DataFrame([first10_mask, first10_nomask, ones])).transpose()
     df.to_csv('out.csv',index = False)
 
-    other_mask = train[6500:]
+    other_mask = train[partition_amt:]
     print(len(other_mask))
-    other_nomask = trainMask[6500:]
+    other_nomask = trainMask[partition_amt:]
     print(len(other_nomask))
 
     different_mask = []
@@ -74,5 +77,28 @@ if __name__ == '__main__':
         different_no_mask.append(second_image)
     
     zeros = [0 for i in range(len(different_mask))]
-    df = (pd.DataFrame([different_mask, different_no_mask, zeros])).transpose()
-    df.to_csv('out2.csv',index = False)
+    df_2 = (pd.DataFrame([different_mask, different_no_mask, zeros])).transpose()
+    # df.to_csv('out2.csv',index = False)
+    df_out = pd.concat([df, df_2])
+    X_train_p, X_test_p, y_train_p, y_test_p = train_test_split(df[[0, 1]], df[[2]], random_state = 10, test_size = 0.2)
+    X_train, X_test, y_train, y_test = train_test_split(df_2[[0, 1]], df_2[[2]], random_state = 10, test_size = 0.2)
+
+    X_train_p['info'] = 1
+    X_train['info'] = 0
+    trains = pd.concat([X_train_p, X_train])
+
+    X_test_p['info'] = 1
+    X_test['info'] = 0
+    tests = pd.concat([X_test_p, X_test])
+
+    trains.to_csv('trains.csv', index = False)
+    tests.to_csv('tests.csv', index = False)
+
+
+    # X_train_p.to_csv('x_train_p.csv')
+    # y_train_p.to_csv('y_train_p.csv')
+
+
+
+
+    # df_out.to_csv('concatenated_dfs.csv')
