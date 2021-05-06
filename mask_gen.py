@@ -97,3 +97,4 @@ if __name__ == '__main__':
                     count += 1
             except BaseException:
                 print('File broke ', file)
+                # os.remove(inputName + "/" + file)

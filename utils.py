@@ -131,7 +131,7 @@ def train(train_dataloader, optimizer, criterion, net):
     loss=[] 
     counter=[]
     iteration_number = 0
-    for epoch in range(1,21): #config.epochs):
+    for epoch in range(1,6): #config.epochs):
         for i, data in enumerate(train_dataloader,0):
             img0, img1 , label = data
             img0, img1 , label = img0, img1, label
@@ -144,6 +144,7 @@ def train(train_dataloader, optimizer, criterion, net):
         iteration_number += 1
         counter.append(iteration_number)
         loss.append(loss_contrastive.item())
+    loss = np.nan_to_num(loss)
     show_plot(counter, loss) 
     print(counter)
     print()
