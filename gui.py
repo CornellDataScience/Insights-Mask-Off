@@ -20,25 +20,42 @@ def introduction():
     label.pack()
 
 
-def capture():
-  gui.filename1 = filedialog.askopenfilename(initialdir = "/insights-mask_off",title = "Select file",filetypes = (("png files","*.png"),("all files","*.*")))
-  gui.filename2 = filedialog.askopenfilename(initialdir = "/insights-mask_off",title = "Select file",filetypes = (("png files","*.png"),("all files","*.*")))
-  script = open("display.py")
-  a_script = script.read()
-  sys.argv = ["display.py", gui.filename1, gui.filename2]
-  exec(a_script)
-  script.close()
-
 canvas = Canvas(gui, width=600, height=600)
-img = PhotoImage(file="/home/datavis_1/insights-mask_off/data/Aaron_Eckhart_0001.png")
-img2 = PhotoImage(file="/home/datavis_1/insights-mask_off/data/Aaron_Eckhart_0001_m.png")
-# img3 = PhotoImage(file="croppedlips.png")
+img = ""
+img2 = ""
 
-canvas.create_image(150, 300, image=img, anchor="center")
 
-canvas.create_image(450, 300, image=img2, anchor="center")
+def display():
+    img_label = Label(gui)
+    img_label.image = img
+    img_label['image'] = img_label.image
+    img_label.pack()
+
+    canvas.create_image(150, 300, image=img, anchor="center")
+    canvas.create_image(450, 300, image=img2, anchor="center")
+    canvas.pack()
+
+
+def capture():
+    global img, img2
+    gui.filename1 = filedialog.askopenfilename(
+        initialdir="", title="Select file", filetypes=(("png files", "*.png"), ("all files", "*.*")))
+    gui.filename2 = filedialog.askopenfilename(
+        initialdir="", title="Select file", filetypes=(("png files", "*.png"), ("all files", "*.*")))
+
+    img = PhotoImage(file=gui.filename1)
+    img2 = PhotoImage(file=gui.filename2)
+    display()
+
+    script = open("display.py")
+    a_script = script.read()
+    sys.argv = ["display.py", gui.filename1, gui.filename2]
+    exec(a_script)
+    script.close()
+
+
 # # canvas.create_image(190, 280, image=img3, anchor="se")
-canvas.pack()
+# canvas.pack()
 pixelVirtual = PhotoImage(width=1, height=1)
 
 introduction_button = Button(gui, anchor=tkinter.CENTER, text="Intro", foreground='black', image=pixelVirtual,
@@ -57,6 +74,6 @@ capture_button.place(x=450, y=50)
 #                        width=75, height=30, compound="c", command=future)
 # future_button.place(x=333, y=300)
 
-
+display()
 gui.geometry("600x600")
 gui.mainloop()
